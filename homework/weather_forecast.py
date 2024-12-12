@@ -21,7 +21,9 @@ class WeatherForecast:
             min_per_day: tensor of size (num_days,)
             max_per_day: tensor of size (num_days,)
         """
-        raise NotImplementedError
+        min_temp, _ = torch.min(self.data,dim =1)
+        max_temp, _ = torch.max(self.data,dim =1)
+        return min_temp, max_temp
 
     def find_the_largest_drop(self) -> torch.Tensor:
         """
