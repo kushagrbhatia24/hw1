@@ -122,7 +122,7 @@ class PyTorchBasics:
 
         Solution length: 11 characters
         """
-        raise NotImplementedError
+        return x.mT
 
     @staticmethod
     def make_it_pytorch_6(x: torch.Tensor) -> torch.Tensor:
@@ -140,7 +140,7 @@ class PyTorchBasics:
 
         Solution length: 19 characters
         """
-        raise NotImplementedError
+        return x.diagonal()
 
     @staticmethod
     def make_it_pytorch_7(x: torch.Tensor) -> torch.Tensor:
@@ -158,7 +158,8 @@ class PyTorchBasics:
 
         Solution length: 27 characters
         """
-        raise NotImplementedError
+        anti_diag = torch.fliplr(x).diagonal()
+        return anti_diag
 
     @staticmethod
     def make_it_pytorch_8(x: torch.Tensor) -> torch.Tensor:
@@ -178,7 +179,8 @@ class PyTorchBasics:
 
         Solution length: 22 characters
         """
-        raise NotImplementedError
+        a = torch.cumsum(x,dim = 0)
+        return a
 
     @staticmethod
     def make_it_pytorch_9(x: torch.Tensor) -> torch.Tensor:
@@ -203,7 +205,10 @@ class PyTorchBasics:
 
         Solution length: 36 characters
         """
-        raise NotImplementedError
+
+        a = torch.cumsum(x,1)
+        a = torch.cumsum(a,0)
+        return a
 
     @staticmethod
     def make_it_pytorch_10(x: torch.Tensor, c: torch.Tensor) -> torch.Tensor:
@@ -226,7 +231,9 @@ class PyTorchBasics:
 
         Solution length: 49 characters
         """
-        raise NotImplementedError
+        y = torch.zeros_like(x)
+        z = torch.where(x>c, x, y)
+        return z
 
     @staticmethod
     def make_it_pytorch_11(x: torch.Tensor, c: torch.Tensor) -> torch.Tensor:
@@ -250,7 +257,8 @@ class PyTorchBasics:
 
         Solution length: 30 characters
         """
-        raise NotImplementedError
+        row = (x < c).nonzero(as_tuple= False).t()
+        return row
 
     @staticmethod
     def make_it_pytorch_12(x: torch.Tensor, m: torch.BoolTensor) -> torch.Tensor:
@@ -270,7 +278,8 @@ class PyTorchBasics:
 
         Solution length: 11 characters
         """
-        raise NotImplementedError
+        return x[m]
+
 
     @staticmethod
     def make_it_pytorch_extra_1(x: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
