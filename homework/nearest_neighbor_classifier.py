@@ -33,8 +33,8 @@ class NearestNeighborClassifier:
         Returns:
             tuple of x and y both torch.Tensor's.
         """
-        xt = torch.tensor(x)
-        yt = torch.tensor(y)
+        xt = torch.tensor(x, dtype=torch.float32)
+        yt = torch.tensor(y, dtype=torch.float32)
         return (xt,yt)
 
     @classmethod
@@ -50,8 +50,8 @@ class NearestNeighborClassifier:
             tuple of mean and standard deviation of the data.
             Both should have a shape [1, D]
         """
-        mean = x.mean(dim = 1)
-        std = x.std(dim = 1)
+        mean = x.mean(dim = 0, keepdim= True)
+        std = x.std(dim = 0, keepdim= True)
         return (mean,std)
 
     def input_normalization(self, x: torch.Tensor) -> torch.Tensor:
@@ -78,7 +78,8 @@ class NearestNeighborClassifier:
         """
         
         x = self.input_normalization(x)
-        idx = ...  # Implement me:
+        distances = torch.norm(self.data - x, dim =1)
+        idx = torch.argmin(distances)
         return self.data[idx], self.label[idx]
 
     def get_k_nearest_neighbor(self, x: torch.Tensor, k: int) -> tuple[torch.Tensor, torch.Tensor]:
@@ -94,10 +95,14 @@ class NearestNeighborClassifier:
             data points will be size (k, D)
             labels will be size (k,)
         """
-        raise NotImplementedError
-        x = self.input_normalization(x)
-        idx = ...  # Implement me:
-        return self.data[idx], self.label[idx]
+        
+        distances = torch.norm(self.data - x, dim =1)
+        nearest_indicies = torch.topk(distances, k, largest=False).indices
+        nearest_neighbors = self.data[nearest_indicies]
+        nearest_labels = self.label[nearest_indicies].float()
+
+        return nearest_indicies, nearest_labels
+
 
     def knn_regression(self, x: torch.Tensor, k: int) -> torch.Tensor:
         """
@@ -111,4 +116,6 @@ class NearestNeighborClassifier:
         Returns:
             average value of labels from the k neighbors. Tensor of shape [1]
         """
-        raise NotImplementedError
+        _, nearest_labels = self.get_k_nearest_neighbor(x,k)
+        avg_label = nearest_labels.float().mean()
+        return avg_label
