@@ -33,7 +33,11 @@ class WeatherForecast:
         Returns:
             tensor of a single value, the difference in temperature
         """
-        raise NotImplementedError
+
+        avg = torch.mean(self.data,dim =1 )
+        d2d = avg[1:] - avg[:-1]
+
+        return torch.min(d2d)
 
     def find_the_most_extreme_day(self) -> torch.Tensor:
         """
@@ -42,8 +46,21 @@ class WeatherForecast:
         Returns:
             tensor with size (num_days,)
         """
-        raise NotImplementedError
+        avg = torch.mean(self.data, dim =1, keepdim=True)
+        diff_from_avg = torch.abs(self.data - avg)
+        #gather get t
+        extreme_temp = self.data.gather(1, torch.argmax(diff_from_avg, dim=1, keepdim=True))
+        extreme_temp = extreme_temp.squeeze()
+        return extreme_temp
 
+        # to expand tensors to match dimesions we can use unsqueeze 
+        # avg = avg.unsqueeze(1)
+        # diff = torch.sub(self.data, avg)
+        # max_diff, ind = torch.max(diff, dim =1)
+        # extreme_measurements = self.data[torch.arange(self.data.size(0)), ind]
+        # print(extreme_measurements)
+        # return extreme_measurements
+        
     def max_last_k_days(self, k: int) -> torch.Tensor:
         """
         Find the maximum temperature over the last k days
@@ -51,7 +68,9 @@ class WeatherForecast:
         Returns:
             tensor of size (k,)
         """
-        raise NotImplementedError
+        t = self.data[-k:]
+        m,_ = torch.max(t, dim =1)
+        return m
 
     def predict_temperature(self, k: int) -> torch.Tensor:
         """
@@ -64,7 +83,9 @@ class WeatherForecast:
         Returns:
             tensor of a single value, the predicted temperature
         """
-        raise NotImplementedError
+        temp = self.data[-k:]
+        avg = torch.mean(temp)
+        return avg
 
     def what_day_is_this_from(self, t: torch.FloatTensor) -> torch.LongTensor:
         """
@@ -89,4 +110,10 @@ class WeatherForecast:
         Returns:
             tensor of a single value, the index of the closest data element
         """
-        raise NotImplementedError
+        diff = torch.abs(self.data - t)
+        avg = torch.mean(diff,dim =1)
+        min_value, min_index = torch.min(avg, dim=0)
+        return min_index
+
+
+
